@@ -11,8 +11,8 @@ import javax.swing.*;
  *
  * @author rushal
  */
-public class Login extends javax.swing.JFrame {
 
+public class Login extends javax.swing.JFrame {
     /**
      * Creates new form Login
      */
@@ -140,7 +140,7 @@ public class Login extends javax.swing.JFrame {
         boolean yes =false;
         try{
             Class.forName("com.mysql.jdbc.Driver");
-            Connection connection =DriverManager.getConnection("jdbc:mysql://localhost:3306/student", "root", "rushal");
+            Connection connection =DriverManager.getConnection("jdbc:mysql://localhost:3306/student", "root", "root");
             PreparedStatement st =connection.prepareStatement("select * from student order by username desc");
             ResultSet r1 =st.executeQuery();
             String usernameCounter ="", passwordCounter ="";
