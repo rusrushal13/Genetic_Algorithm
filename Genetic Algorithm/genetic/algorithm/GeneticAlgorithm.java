@@ -1,28 +1,25 @@
 package genetic.algorithm;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.*;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+class Circle{
+	public int x, y;                // the coordinates of the center of the circle
+	public int radius;              // the radius of the circle
+	public int red, green, blue;	// the RGB values of the color of the circle
+	public int alpha;		 		// the alpha value of the color
+	public int time;				// the time when this circle was added to the member to which it belongs
 
-class Circle {
-	public int x, y;										// the coordinates of the center of the circle
-	public int radius;										// the radius of the circle
-	public int red, green, blue;							// the RGB values of the color of the circle
-	public int alpha; 										// the alpha value of the color
-	public int time;										// the time when this circle was added to the member to which it belongs
-
-	public boolean isPointInside(int i, int j) {
+	public boolean isPointInside(int i, int j){
 		return (this.x - i) * (this.x - i) + (this.y - j) * (this.y - j) <= this.radius * this.radius;
 	}
+	public Circle(){}
 
-	public Circle() {
-
-	}
-
-	public Circle(Circle other) {
+	public Circle(Circle other){
 		this.x = other.x ;
 		this.y = other.y ;
 		this.red = other.red ;
@@ -33,22 +30,19 @@ class Circle {
 		this.radius = other.radius;
 	}
 }
-
-class Genotype {
-	public Circle circles[] = new Circle[GeneticAlgorithm.circleCount];								// each member of population contains a list of circles
-	public int count;										// stores the number of circles in the present member of population
-	public int bg_red, bg_green, bg_blue;					// the RGB values of the background
-	public int bg_alpha;									// the alpha value of the background
+class Genotype{
+	public Circle circles[] = new Circle[GeneticAlgorithm.circleCount];	// each member of population contains a list of circles
+	public int count;													// stores the number of circles in the present member of population
+	public int bg_red, bg_green, bg_blue;								// the RGB values of the background
+	public int bg_alpha;												// the alpha value of the background
 	public double fitness;
 	public double cfitness;
 	public double rfitness;
-
-	public Genotype() {
+	public Genotype(){
 		for(int i = 0 ; i < circles.length ; i++)
 			this.circles[i] = new Circle();
 	}
-
-	public Genotype(Genotype other) {
+	public Genotype(Genotype other){
 		for(int i = 0 ; i < circles.length ; i++)
 			this.circles[i] = new Circle(other.circles[i]);
 		this.count = other.count ;
@@ -60,20 +54,18 @@ class Genotype {
 		this.cfitness = other.cfitness ;
 		this.rfitness = other.rfitness ;
 	}
-
-	public Color getColorOfPoint(int i, int j) {
+	public Color getColorOfPoint(int i, int j){
 		TreeMap <Integer, Circle> treemap = new TreeMap <Integer, Circle> ();
-		for(int k = 0 ; k < circles.length ; ++k) {
+		for(int k = 0 ; k < circles.length ; ++k){
 			if(circles[k].isPointInside(i, j))
 				treemap.put(circles[k].time, circles[k]);
 		}
 		// Color color = new Color(bg_red, bg_green, bg_blue);
-
 		Iterator it = treemap.entrySet().iterator();
 		// int entries = 0;
 		// int sum_r = 0, sum_g = 0, sum_b=0;
 		double color_red = bg_red, color_green = bg_green, color_blue = bg_blue, color_alpha = bg_alpha; 
-		while(it.hasNext()) {
+		while(it.hasNext()){
 			// entries ++;
 			Map.Entry entry = (Map.Entry)it.next();
 			Circle c = (Circle)entry.getValue();
@@ -101,26 +93,21 @@ class Genotype {
 		// 		sum_b = (int)(sum_b/(entries*1.0));
 		// 		color = new Color(sum_r, sum_g, sum_b);
 		// }
-
 		return color;
 	}
-	
-	public int abs(int diff)
-	{
-			if(diff < 0) return -1*diff;
+	public int abs(int diff){
+		if(diff < 0) return -1*diff;
 			return diff;
 	}
-	public int idnt(int diff)
-	{
-			if(diff == 0)
-				return 1;
-			return 0;
+	public int idnt(int diff){
+		if(diff == 0)
+			return 1;
+		return 0;
 	}
-
-	public double getFitness(int[][] result) {
+	public double getFitness(int[][] result){
 		double ans = 0;
-		for(int i = 0 ; i < result.length ; i++) {
-			for(int j = 0 ; j < result[0].length ; j++) {
+		for(int i = 0 ; i < result.length ; i++){
+			for(int j = 0 ; j < result[0].length ; j++){
 				Color m = getColorOfPoint(i, j);
 				Color n = new Color(result[i][j]);
 				double moda = Math.sqrt(m.getRed()*m.getRed() + m.getGreen()*m.getGreen()+m.getBlue()*m.getBlue());
@@ -138,86 +125,16 @@ class Genotype {
 	}
 	public void print(){
 		//for(int i=0;i<GeneticAlgorithm.circleCount;++i)
-		for(int i=0;i<-1;++i)
-			{
-				Circle temp = new Circle(circles[i]);
-					//System.out.println("x = "+Integer.toString(temp.x)+" |y = "+Integer.toString(temp.y)+" |radius = "+Integer.toString(temp.radius) + " |red= "+ Integer.toString(temp.red) + " |green = "+ Integer.toString(temp.green)+" |blue= "+Integer.toString(temp.blue)+" |alpha= "+Float.toString(temp.alpha)+" |time= "+Integer.toString(temp.time));
-			}
+		for(int i=0;i<-1;++i){
+			Circle temp = new Circle(circles[i]);
+			//System.out.println("x = "+Integer.toString(temp.x)+" |y = "+Integer.toString(temp.y)+" |radius = "+Integer.toString(temp.radius) + " |red= "+ Integer.toString(temp.red) + " |green = "+ Integer.toString(temp.green)+" |blue= "+Integer.toString(temp.blue)+" |alpha= "+Float.toString(temp.alpha)+" |time= "+Integer.toString(temp.time));
+		}
 	}
 }
-
-public class GeneticAlgorithm {
-
-	private static int[][] convertTo2D(BufferedImage image) {
-
-		final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-		//Raster raster = image.getRaster();
-		final int width = image.getWidth();
-		final int height = image.getHeight();
-
-		int[][] result = new int[height][width];
-		if (image.getAlphaRaster() != null) {
-			System.out.println("You are screwed");
-			final int pixelLength = 3;
-			for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-				int argb = 0;
-				//argb += -16777216;									  // 255 alpha
-				//argb += (((int) pixels[pixel] & 0xff) << 24);		   // alpha
-				argb += ((int) pixels[pixel + 1] & 0xff);			   // blue
-				argb += (((int) pixels[pixel + 2] & 0xff) << 8);		// green
-				argb += (((int) pixels[pixel + 3] & 0xff) << 16);	   // red
-				result[row][col] = argb;
-				col++;
-				if (col == width) {
-					col = 0;
-					row++;
-				}
-			}
-		} 
-	  else {
-			final int pixelLength = 3;
-			for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-				int argb = 0;
-				//argb += -16777216;									  // 255 alpha
-				argb += ((int) pixels[pixel] & 0xff);				   // blue
-				argb += (((int) pixels[pixel + 1] & 0xff) << 8);		// green
-				argb += (((int) pixels[pixel + 2] & 0xff) << 16);	   // red
-				result[row][col] = argb;
-				col++;
-				if (col == width) {
-					col = 0;
-					row++;
-				}
-			}
-		}
-		return result;
-	}
-
- 	public static void convertColorArrayToImage(int[][] color, int generation, int member, String imageName, String directory) {
- 		String curr = imageName ;
- 		// if(generation < 10)
- 		// 	curr = curr + "000" ;
- 		// else if(generation < 100)
- 		// 	curr = curr + "00" ;
- 		// else if(generation < 1000)
- 		// 	curr = curr + "0" ;
-		String path = directory+curr +"-"+ Integer.toString(generation) + ".jpg";
-		//String path = "result" + Integer.toString(generation) + ".jpg";
-		BufferedImage image = new BufferedImage(color[0].length, color.length, BufferedImage.TYPE_INT_RGB);
-		for(int i = 0; i < color.length; i++)
-		  	for(int j = 0; j < color[0].length; j++)
-				image.setRGB(j, i, color[i][j]);
-
-		File ImageFile = new File(path);
-		try {
-	  		ImageIO.write(image, "jpg", ImageFile);
-		}
-		catch(IOException e) {
-	  		e.printStackTrace();
-		}
- 	}
-
- 	public static int POPSIZE = 15;
+public class GeneticAlgorithm implements Runnable{
+        public static String imagePath = "";
+        public static boolean status =false;
+	public static int POPSIZE = 15;
  	public static int MAXGENS = 150000;
  	public static double PXOVER = 0.8;
  	public static double PMUTATION = 0.1;
@@ -229,16 +146,80 @@ public class GeneticAlgorithm {
  	public static int RADIUSLIMIT=175;
  	public static double PMUTATIONCOLOR = .2;
 
- 	public static void crossover() {
+	private static int[][] convertTo2D(BufferedImage image){
+		final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		//Raster raster = image.getRaster();
+		final int width = image.getWidth();
+		final int height = image.getHeight();
+		int[][] result = new int[height][width];
+		if (image.getAlphaRaster() != null){
+			System.out.println("You are screwed");
+			final int pixelLength = 3;
+			for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength){
+				int argb = 0;
+				//argb += -16777216;								// 255 alpha
+				//argb += (((int) pixels[pixel] & 0xff) << 24);		// alpha
+				argb += ((int) pixels[pixel + 1] & 0xff);			// blue
+				argb += (((int) pixels[pixel + 2] & 0xff) << 8);	// green
+				argb += (((int) pixels[pixel + 3] & 0xff) << 16);	// red
+				result[row][col] = argb;
+				col++;
+				if (col == width){
+					col = 0;
+					row++;
+				}
+			}
+		}
+	  	else{
+			final int pixelLength = 3;
+			for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength){
+				int argb = 0;
+				//argb += -16777216;									// 255 alpha
+				argb += ((int) pixels[pixel] & 0xff);					// blue
+				argb += (((int) pixels[pixel + 1] & 0xff) << 8);		// green
+				argb += (((int) pixels[pixel + 2] & 0xff) << 16);		// red
+				result[row][col] = argb;
+				col++;
+				if (col == width){
+					col = 0;
+					row++;
+				}
+			}
+		}
+		return result;
+	}
+ 	public static void convertColorArrayToImage(int[][] color, int generation, int member, String imageName, String directory){
+ 		String curr =imageName;
+ 		// if(generation < 10)
+ 		// 	curr = curr + "000" ;
+ 		// else if(generation < 100)
+ 		// 	curr = curr + "00" ;
+ 		// else if(generation < 1000)
+ 		// 	curr = curr + "0" ;
+		String path = curr +"-"+ Integer.toString(generation) + ".jpg";
+		//String path = "result" + Integer.toString(generation) + ".jpg";
+		BufferedImage image = new BufferedImage(color[0].length, color.length, BufferedImage.TYPE_INT_RGB);
+		for(int i = 0; i < color.length; i++)
+		  	for(int j = 0; j < color[0].length; j++)
+				image.setRGB(j, i, color[i][j]);
+
+		File ImageFile = new File(path);
+		try{
+	  		ImageIO.write(image, "jpg", ImageFile);
+		}
+		catch(IOException e) {
+	  		e.printStackTrace();
+		}
+ 	}
+ 	public static void crossover(){
  		int mem;
 		int one = 0;
 		int first = 0;
 		double x;
-
-		for(mem = 0; mem < POPSIZE; ++mem) {
+		for(mem = 0; mem < POPSIZE; ++mem){
 			Random randomGenerator = new Random();
 			x = (randomGenerator.nextInt(1000)) / 1000.0;
-			if(x < PXOVER) {
+			if(x < PXOVER){
 				++first;
 				if(first % 2 == 0)
 					Xover(one, mem);
@@ -247,25 +228,22 @@ public class GeneticAlgorithm {
 			}
 		}
  	}
-
- 	public static void elitist() {
+ 	public static void elitist(){
  		int i;
 		double best;
 		int best_mem = 0;
 		double worst;
 		int worst_mem = 0;
-
 		best = population[0].fitness;
 		worst = population[0].fitness;
-
-		for(i = 0; i < POPSIZE ; ++i) {
-			if(population[i].fitness > best) {
+		for(i = 0; i < POPSIZE ; ++i){
+			if(population[i].fitness > best){
 				best = population[i].fitness;
-				best_mem = i ;
+				best_mem = i;
 			}
-			if(population[i].fitness < worst) {
-				worst = population[i].fitness ;
-				worst_mem = i ;
+			if(population[i].fitness < worst){
+				worst = population[i].fitness;
+				worst_mem = i;
 			}
 		}
 	//
@@ -277,29 +255,24 @@ public class GeneticAlgorithm {
 	//
 		if(best >= population[POPSIZE].fitness)
 			population[POPSIZE] = new Genotype(population[best_mem]);
-		else
-			{
+		else{
 			population[worst_mem] = new Genotype(population[POPSIZE]);
-			}
+		}
  	}
-
- 	public static void evaluate() {
+ 	public static void evaluate(){
 		//System.out.println("inside evaluate");
 		for(int member = 0; member < POPSIZE; member++)
 			population[member].getFitness(result);
  	}
-
- 	public static void initialize() {
+ 	public static void initialize(){
  		population = new Genotype[POPSIZE + 1];
  		newpopulation = new Genotype[POPSIZE + 1];
- 			
  		Random randomGenerator = new Random();
-
- 		for(int i = 0 ; i <= POPSIZE ; i++) {
+ 		for(int i = 0 ; i <= POPSIZE ; i++){
  			population[i] = new Genotype();
  			newpopulation[i] = new Genotype();
  			population[i].count = circleCount;
- 			for(int j = 0 ; j < circleCount ; j++) {
+ 			for(int j = 0 ; j < circleCount ; j++){
  				population[i].circles[j].x = new Integer(randomGenerator.nextInt(row));
 				population[i].circles[j].y = new Integer(randomGenerator.nextInt(col));
 				population[i].circles[j].blue = new Integer(randomGenerator.nextInt(255));
@@ -319,15 +292,12 @@ public class GeneticAlgorithm {
  		//System.out.println("inside initialize");
  		//population[POPSIZE].print();
  	}
-
- 	public static void keep_the_best() {
+ 	public static void keep_the_best(){
  		int cur_best;
 		int mem;
 		int i;
-
 		cur_best = 0;
-
-		for(mem = 1; mem < POPSIZE; mem++) {
+		for(mem = 1; mem < POPSIZE; mem++){
 			if(population[mem].fitness > population[cur_best].fitness)
 				cur_best = mem;
 		}
@@ -337,49 +307,47 @@ public class GeneticAlgorithm {
 		population[POPSIZE] = new Genotype(population[cur_best]);
  	}
 
- 	public static void mutate() {
-		for(int i = 0; i < POPSIZE; i++) {
+ 	public static void mutate(){
+		for(int i = 0; i < POPSIZE; i++){
 			Random randomGenerator = new Random();
-			for(int j = 0 ; j<circleCount;++j)
-			{
+			for(int j = 0 ; j<circleCount;++j){
 				double x = randomGenerator.nextInt(10000) / 10000.0;
 					//System.out.println("x = " + x);
-				if(x<PMUTATION)
-				{
+				if(x<PMUTATION){
 					 x= randomGenerator.nextInt(10000) / 10000.0;
-					if(x < PMUTATIONCOLOR) {						
+					if(x < PMUTATIONCOLOR){						
 						//int j = new Integer(randomGenerator.nextInt(circleCount));
 						//System.out.println("Mutating");
 						//System.out.println("Value = " + population[i].circles[j].x);
 						population[i].circles[j].x = new Integer(randomGenerator.nextInt(row));
 					}
-					 x= randomGenerator.nextInt(10000) / 10000.0;
-					if(x < PMUTATIONCOLOR) {	
+					x= randomGenerator.nextInt(10000) / 10000.0;
+					if(x < PMUTATIONCOLOR){
 						//System.out.println("Value = " + population[i].circles[j].x);
 						population[i].circles[j].y = new Integer(randomGenerator.nextInt(col));
 					}
 					x= randomGenerator.nextInt(10000) / 10000.0;
-					if(x < PMUTATIONCOLOR) {	
+					if(x < PMUTATIONCOLOR){	
 						population[i].circles[j].red = new Integer(randomGenerator.nextInt(255));
 					}
 					x= randomGenerator.nextInt(10000) / 10000.0;
-					if(x < PMUTATIONCOLOR) {	
+					if(x < PMUTATIONCOLOR){	
 						population[i].circles[j].green = new Integer(randomGenerator.nextInt(255));
 					}
 					x= randomGenerator.nextInt(10000) / 10000.0;
-					if(x < PMUTATIONCOLOR) {	
+					if(x < PMUTATIONCOLOR){	
 						population[i].circles[j].blue = new Integer(randomGenerator.nextInt(255));
 					}
 					x= randomGenerator.nextInt(10000) / 10000.0;
-					if(x < PMUTATIONCOLOR) {	
+					if(x < PMUTATIONCOLOR){	
 						population[i].circles[j].alpha = new Integer(randomGenerator.nextInt(255));
 					}
 					x= randomGenerator.nextInt(10000) / 10000.0;
-					if(x < PMUTATION) {	
+					if(x < PMUTATION){	
 						population[i].circles[j].radius = new Integer(randomGenerator.nextInt(RADIUSLIMIT));
 					}
 					x= randomGenerator.nextInt(10000) / 10000.0;
-					if(x < PMUTATION) {	
+					if(x < PMUTATION){	
 						population[i].circles[j].time = new Integer(randomGenerator.nextInt(10000));
 					}
 				}
@@ -391,13 +359,11 @@ public class GeneticAlgorithm {
 			//population[i].bg_alpha = randomGenerator.nextInt(255);
  	}
 
- 	public static double randval(double low, double high) {
+ 	public static double randval(double low, double high){
  		Random randomGenerator = new Random();
 		return ((double)(randomGenerator.nextInt(1000)) / 1000.0) *(high - low) + low;
-
  	}
-
- 	public static void selector() {
+ 	public static void selector(){
  		int i, j, mem;
 		double p, sum = 0.0;
 	//
@@ -410,7 +376,6 @@ public class GeneticAlgorithm {
 	//
 		for(mem = 0; mem < POPSIZE; mem++)
 			population[mem].rfitness = population[mem].fitness / sum;	 
-		
 		population[0].cfitness = population[0].rfitness;
 	//
 	//	Calculate the cumulative fitness.
@@ -425,22 +390,20 @@ public class GeneticAlgorithm {
 		// 	System.out.println(z + " : " + population[z].cfitness);
 		// }
 
-		for(i = 0; i < POPSIZE; i++)
-		{
+		for(i = 0; i < POPSIZE; i++){
 			Random randomGenerator = new Random();
 			p = (randomGenerator.nextInt(1000)) / 1000.0;
 			//System.out.println("p = " + p);
-			if(p < population[0].cfitness) {
+			if(p < population[0].cfitness){
 	//			System.out.println(i + " Picking : " + 0);
 				newpopulation[i] = new Genotype(population[0]);
 			}
-			else
-			{
-				for(j = 0; j < POPSIZE; j++) {
-					if(p >= population[j].cfitness && p < population[j+1].cfitness) {
+			else{
+				for(j = 0; j < POPSIZE; j++){
+					if(p >= population[j].cfitness && p < population[j+1].cfitness){
 	//					System.out.println(i + " Picking : " + (j + 1));
 						newpopulation[i] = new Genotype(population[j+1]);
-						break ;
+						break;
 					}
 				}
 			}
@@ -456,19 +419,16 @@ public class GeneticAlgorithm {
 		// }
 		// System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
  	}
-
- 	public static void Xover(int one, int two) {
+ 	public static void Xover(int one, int two){
  		Genotype a = new Genotype(population[one]);
  		Genotype b = new Genotype(population[two]);
-
  		Random randomGenerator = new Random();
  		int k = randomGenerator.nextInt(a.circles.length);
  		for(int i = 0 ; i < k ; i++) {
  			Circle tmp = new Circle(a.circles[i]);
- 			a.circles[i] = new Circle(b.circles[i]) ;
- 			b.circles[i] = new Circle(tmp) ;
+ 			a.circles[i] = new Circle(b.circles[i]);
+ 			b.circles[i] = new Circle(tmp);
  		}
- 		
  		// int j=k;																			//two point crossover
  		// while(j==k) {j = randomGenerator.nextInt(a.circles.length);}
  		// for(int i = 0 ; i < j ; i++) {
@@ -476,55 +436,48 @@ public class GeneticAlgorithm {
  		// 	a.circles[i] = new Circle(b.circles[i]) ;
  		// 	b.circles[i] = new Circle(tmp) ;
  		// }
- 		
- 		population[one] = new Genotype(a) ;
- 		population[two] = new Genotype(b) ;
+ 		population[one] = new Genotype(a);
+ 		population[two] = new Genotype(b);
  	}
-		
-	
-
- 	public static void main(String[] args) throws IOException {
- 		
- 		PrintWriter writer = new PrintWriter(args[0]+"info.txt", "UTF-8");
+ 	public static void main() throws IOException{
+ 		PrintWriter writer = new PrintWriter(args+"info.txt", "UTF-8");
 		writer.println("The first line");
-			writer.println("POPSIZE=" + Integer.toString(POPSIZE));
-			writer.println("MAXGENS=" + Integer.toString(MAXGENS));
-			writer.println("circleCount=" + Integer.toString(circleCount));
-			writer.println("RADIUSLIMIT=" + Integer.toString(RADIUSLIMIT));
-			writer.println("PXOVER=" + Double.toString(PXOVER));
-			writer.println("PMUTATION=" + Double.toString(PMUTATION));
-			writer.println("PMUTATIONCOLOR=" + Double.toString(PMUTATIONCOLOR));
- 	// public static int MAXGENS = 300000;
- 	// public static double PXOVER = 0.8;
- 	// public static double PMUTATION = 0.2;
- 	// public static Genotype population[];
- 	// public static Genotype newpopulation[];
- 	// public static int row, col;
- 	// public static int circleCount = 30;
- 	// public static int[][] result;
- 	// public static int RADIUSLIMIT=70;
- 	// public static double PMUTATIONCOLOR = .4;
+		writer.println("POPSIZE=" + Integer.toString(POPSIZE));
+		writer.println("MAXGENS=" + Integer.toString(MAXGENS));
+		writer.println("circleCount=" + Integer.toString(circleCount));
+		writer.println("RADIUSLIMIT=" + Integer.toString(RADIUSLIMIT));
+		writer.println("PXOVER=" + Double.toString(PXOVER));
+		writer.println("PMUTATION=" + Double.toString(PMUTATION));
+		writer.println("PMUTATIONCOLOR=" + Double.toString(PMUTATIONCOLOR));
+	 	// public static int MAXGENS = 300000;
+	 	// public static double PXOVER = 0.8;
+	 	// public static double PMUTATION = 0.2;
+	 	// public static Genotype population[];
+	 	// public static Genotype newpopulation[];
+	 	// public static int row, col;
+	 	// public static int circleCount = 30;
+	 	// public static int[][] result;
+	 	// public static int RADIUSLIMIT=70;
+	 	// public static double PMUTATIONCOLOR = .4;
 		// writer.println("The second line");
 		writer.close();
-
-		BufferedImage image = ImageIO.read(GeneticAlgorithm.class.getResource(args[0] + ".jpg"));	//read the image into the image object
+		BufferedImage image = ImageIO.read(GeneticAlgorithm.class.getResource(args + ".jpg"));	//read the image into the image object
 		result = convertTo2D(image);
 		row = result.length;
 		col = result[0].length;
 		Genotype best = null;
 		initialize();
 		//System.out.println("After Initialize");
-			best = new Genotype(population[POPSIZE]);
-			best.print();
+		best = new Genotype(population[POPSIZE]);
+		best.print();
 		evaluate();
 		//System.out.println("After Evaluate");
-			best = new Genotype(population[POPSIZE]);
-			best.print();
+		best = new Genotype(population[POPSIZE]);
+		best.print();
 		keep_the_best();
 		//System.out.println("After Keep_the_best");
-			best = new Genotype(population[POPSIZE]);
-			best.print();
-		
+		best = new Genotype(population[POPSIZE]);
+		best.print();
 		double old_fitness = -1;
 		for(int generation = 0 ; generation < MAXGENS ; generation++) {
 			selector();
@@ -562,23 +515,44 @@ public class GeneticAlgorithm {
 			// 	System.out.println(population[i].fitness);
 			// }
 			double new_fitness = best.fitness;
-			
-			if(old_fitness!=new_fitness)
-			{
+			if(old_fitness!=new_fitness){
 					int answer[][] = new int[row][col];
-					for(int i = 0 ; i < row ; i++) {
-						for(int j = 0 ; j < col ; j++) {
+					for(int i = 0 ; i < row ; i++){
+						for(int j = 0 ; j < col ; j++){
 							Color c = population[POPSIZE].getColorOfPoint(i, j);
 							answer[i][j] = (c.getRed() << 16) | (c.getGreen() << 8) | c.getBlue();
-											//answer[i][j] = (c.getRed() << 24) | (c.getGreen() << 16) | (c.getBlue() << 8) | c.getAlpha();
+							//answer[i][j] = (c.getRed() << 24) | (c.getGreen() << 16) | (c.getBlue() << 8) | c.getAlpha();
 						}
 					}
-					convertColorArrayToImage(answer, generation,POPSIZE,args[0], args[0]);
+					convertColorArrayToImage(answer, generation,POPSIZE,args, args);
 			}
 			old_fitness = new_fitness;
-			System.out.println(generation + "\t" + population[POPSIZE].fitness);
-	
-		
+                        String s =Integer.toString(generation) + "\t" + Double.toString(population[POPSIZE].fitness);
+                        System.out.println(s);
+                        imagePath = s;
+                        //System.out.println(s + " ,,, " + imagePath + "  Rushal");
+                        if(status){
+                            break;
+                            
+                        }
 		}
 	}
+        public String getPath(){
+            return imagePath;
+        }
+
+    @Override
+    public void run() {
+            try {
+                main();        
+            } catch (IOException ex) {
+                Logger.getLogger(GeneticAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+    
+    public static void setargs(String s1)
+    {
+        GeneticAlgorithm.args = s1;
+    }
+    public static String args="my_image";
 }
